@@ -1,0 +1,20 @@
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { AppShell } from '@/components/app-shell';
+import { Card, PrimaryButton, uiStyles } from '@/components/ui';
+import { useAppData } from '@/data/app-data';
+import { analyseImage, discoverTextCandidate } from '@/ai/openai-compatible';
+import { colors, radius, spacing } from '@/design/tokens';
+import { FuriganaText } from '@/components/furigana-text';
+
+type Candidate = { japanese: string; reading: string; meaning: string };
+export default function DiscoverScreen() {
+  const { addItem, connection, profile } = useAppData(); const [source, setSource] = useState(''); const [candidate, setCandidate] = useState<Candidate | null>(null); const [image, setImage] = useState<string | null>(null); const [status, setStatus] = useState(''); const [saved, setSaved] = useState(false);
+  const fromText = async () => { if (!source.trim()) return; if (!connection || connection.token.includes('FillYour')) return setStatus('Set up a text AI connection in Settings before analysing text.'); setStatus('Sensei is finding one useful phrase…'); try { setCandidate(await discoverTextCandidate(connection, source)); setSaved(false); setStatus('Sensei suggested one learning item. Please check it before saving.'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Text analysis failed.'); } };
+  const chooseImage = async () => { const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], base64: true, quality: 0.7 }); if (!result.canceled && result.assets[0]?.base64) { setImage(`data:${result.assets[0].mimeType ?? 'image/jpeg'};base64,${result.assets[0].base64}`); setCandidate(null); setStatus('Photo selected locally. Send it only if you are comfortable sharing it with your selected provider.'); } };
+  const analyse = async () => { if (!image || !connection || connection.token.includes('FillYour')) return setStatus('Add a valid vision-capable endpoint, model, and token in Settings first.'); setStatus('Sensei is analysing the image…'); try { setCandidate(await analyseImage(connection, image)); setSaved(false); setStatus('Sensei suggested one learning item. Please check it before saving.'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Image analysis failed.'); } };
+  const save = async () => { if (!candidate || saved) return; await addItem({ kind: 'phrase', japanese: candidate.japanese, reading: candidate.reading, meaning: candidate.meaning, notes: image ? 'Discovered from a learner-provided image.' : 'Discovered from learner-provided text.', state: 'seen' }); setSaved(true); };
+  return <AppShell title="Discover" subtitle="Bring Japanese from the world around you."><Card><Text style={uiStyles.japanese}>Discover from text</Text><TextInput accessibilityLabel="Japanese source text" multiline onChangeText={setSource} placeholder="Paste Japanese text here" placeholderTextColor={colors.mutedText} style={styles.input} value={source}/><PrimaryButton label="Ask Sensei about this text" onPress={() => void fromText()}/></Card><Card><Text style={uiStyles.japanese}>Discover from a photo</Text><Text style={uiStyles.body}>Choose a photo, then explicitly decide whether to send it to your selected AI provider.</Text><PrimaryButton label="Choose a photo" onPress={() => void chooseImage()}/>{image ? <PrimaryButton label="Send photo to Sensei" onPress={() => void analyse()}/> : null}</Card>{candidate ? <Card><FuriganaText japanese={candidate.japanese} reading={candidate.reading} showReading={profile?.furiganaMode !== 'none'}/><Text style={uiStyles.body}>{candidate.meaning}</Text><PrimaryButton label={saved ? 'Saved to Library' : 'Save selected phrase'} onPress={() => void save()}/></Card> : null}{status ? <Text style={uiStyles.muted}>{status}</Text> : null}</AppShell>;
+}
+const styles=StyleSheet.create({input:{backgroundColor:colors.surface,borderColor:colors.border,borderRadius:radius.md,borderWidth:1,color:colors.text,minHeight:120,padding:spacing.md,textAlignVertical:'top'},});

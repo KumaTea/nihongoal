@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" role="img" aria-labelledby="title desc">
+  <title id="title">NihonGoal! Japanese for your real life</title>
+  <desc id="desc">A calm Japanese-inspired banner with a sun, path, and app name.</desc>
+  <rect width="1500" height="1000" fill="#F7F5F0"/>
+  <circle cx="1165" cy="300" r="235" fill="#E85D4A"/>
+  <circle cx="1165" cy="300" r="134" fill="#F7F5F0"/>
+  <path d="M786 790c116-88 242-132 379-132 92 0 182 20 269 60" fill="none" stroke="#263238" stroke-linecap="round" stroke-width="58"/>
+  <path d="M927 680l238-276 235 276" fill="none" stroke="#263238" stroke-linecap="round" stroke-linejoin="round" stroke-width="52"/>
+  <path d="M1165 404V194m0 0-64 64m64-64 64 64" fill="none" stroke="#F7F5F0" stroke-linecap="round" stroke-linejoin="round" stroke-width="34"/>
+  <circle cx="1390" cy="115" r="26" fill="#D6A329"/>
+  <text x="118" y="338" fill="#263238" font-family="Georgia, serif" font-size="126" font-weight="700" letter-spacing="-5">NihonGoal!</text>
+  <text x="126" y="428" fill="#3D7667" font-family="Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="8">日本語 · EVERYDAY</text>
+  <text x="126" y="585" fill="#66706C" font-family="Arial, sans-serif" font-size="51">Japanese for your real life.</text>
+  <text x="126" y="655" fill="#66706C" font-family="Arial, sans-serif" font-size="51">A small step, every day.</text>
+</svg>
